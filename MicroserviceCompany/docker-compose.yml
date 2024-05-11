@@ -1,0 +1,43 @@
+services:
+  postgres:
+    container_name: postgres_container
+    image: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgresql
+      PGDATA: /data/postgres
+    volumes:
+      - postgres:/data/postgres
+    ports:
+      - "5432:5432"
+    networks:
+      - postgres
+    restart: unless-stopped
+    
+    Zipkin:
+      image: openzipkin/zipkin
+      container_name: zipkin
+      ports:
+        -9411:9411
+      networks:
+        - postgres
+    
+    admin:
+      container_name: admin_container
+      image: dpage/admin4
+      enviroment:
+        ADMIN_DEFAULT_EMAIL: ${ADMIN_DEFAULT_EMAIL:-admin4@admin.org}
+        ADMIN_DEFAULT_PASSWORD: ${ADMIN_DEFAULT-PASSWORD:-admin}
+        ADMIN_CONFIG_SERVER_MODE: 'False'
+        volumns:
+          -admin:/var/lib/admin
+        ports:
+          -"5050:80"
+      networks:
+      postgres:
+        driver: bridge
+      volumes:
+        postgres:
+        pgadmin:
+        
+    
